@@ -6,6 +6,7 @@ import Counter from "./counter";
 import withCart from "./withCart";
 import ShoppingCartUI from "./ShoppingCart";
 import { ProtectedUserProfile, ProtectedAdminDashboard } from "./ProtectedComponents";
+import HookFormDemo from "./HookFormDemo";
 
 export default function Page() {
 
@@ -35,6 +36,11 @@ export default function Page() {
                     <p><strong>Ghi chú:</strong> Bạn có thể mở file <code>withAuth.tsx</code> và thay đổi giá trị trong hàm <code>useAuth</code> (đổi role thành 'user' hoặc set user thành 'null') để xem các trạng thái phân quyền khác nhau hoạt động như thế nào.</p>
                 </div>
             </div>
+
+            <hr style={{width: '100%', margin: '40px 0'}} />
+
+            <h2 className="text-2xl font-bold mb-4">Ví dụ React Hook Form</h2>
+            <HookFormDemo />
             
             <div className="mb-10"></div>
         </div>

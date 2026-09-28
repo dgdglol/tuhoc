@@ -20,7 +20,7 @@ const useAuth = () => {
         return () => clearTimeout(timer);
     }, []);
 
-    return { user, isAuthenticated: !!user };
+    return { user, isAuthenticated: !!user };//khai báo isAuthenticated là boolean(!!)
 };
 
 // --- AUTHENTICATION HOC ---
