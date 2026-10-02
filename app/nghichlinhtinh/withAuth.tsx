@@ -8,7 +8,7 @@ const useAuth = () => {
     // Để test, bạn có thể đổi giá trị này thành null để xem trạng thái chưa đăng nhập,
     // hoặc đổi role thành 'user' để xem Authorization hoạt động.
     const [user, setUser] = useState<{ name: string; role: string } | null>(null);
-
+    const [loading, setLoading] = useState<boolean>(true);
     // Giả lập delay khi fetch dữ liệu auth (như đang gọi API)
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -29,11 +29,11 @@ export function withAuthentication<P extends object>(
     WrappedComponent: React.ComponentType<P>
 ) {
     return function WithAuthentication(props: P) {
-        const { user, isAuthenticated } = useAuth();
-
-        if (user === undefined) { // Chờ loading... (nếu có state loading)
+        const { user, isAuthenticated, loading } = useAuth();
+        if (loading) {
             return <div className="p-4 bg-gray-100 rounded-md">Đang kiểm tra thông tin đăng nhập...</div>;
         }
+
 
         if (!isAuthenticated) {
             return (
@@ -55,7 +55,9 @@ export function withAuthorization<P extends object>(
 ) {
     return function WithAuthorization(props: P) {
         const { user, isAuthenticated } = useAuth();
-
+        if(loading) {
+            return <div className="p-4 bg-gray-100 rounded-md">Đang kiểm tra quyền truy cập...</div>;
+        }
         if (!isAuthenticated || !user) {
             return (
                 <div className="p-4 bg-yellow-100 text-yellow-700 border border-yellow-300 rounded-md shadow-sm">

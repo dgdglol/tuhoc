@@ -8,11 +8,11 @@ import ShoppingCartUI from "./ShoppingCart";
 import { ProtectedUserProfile, ProtectedAdminDashboard } from "./ProtectedComponents";
 import HookFormDemo from "./HookFormDemo";
 
+const EnhancedCounter = WithCounter(Counter);
+const EnhancedCart = withCart(ShoppingCartUI);
+
 export default function Page() {
 
-    const EnhancedCounter = WithCounter(Counter);
-    const EnhancedCart = withCart(ShoppingCartUI);
-    
     return (
         <div className="flex flex-col items-center justify-center min-h-full py-2">
             <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333', marginBottom: '20px' }}>

@@ -1,5 +1,5 @@
 export default async function Page() {
-    const Data = await fetch('https://api.vercal.app/blog');
+    const Data = await fetch('https://api.vercel.app/blog');
     const post = await Data.json();
     return (
         <ul>
