@@ -6,15 +6,15 @@ import Counter from "./counter";
 import withCart from "./withCart";
 import ShoppingCartUI from "./ShoppingCart";
 import { ProtectedUserProfile, ProtectedAdminDashboard } from "./ProtectedComponents";
+import { AuthProvider, AuthRoleSwitcher } from "./withAuth";
 import HookFormDemo from "./HookFormDemo";
 
 const EnhancedCounter = WithCounter(Counter);
 const EnhancedCart = withCart(ShoppingCartUI);
 
 export default function Page() {
-
     return (
-        <div className="flex flex-col items-center justify-center min-h-full py-2">
+        <div className="nghich-container flex flex-col items-center justify-center min-h-full py-6 rounded-2xl">
             <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333', marginBottom: '20px' }}>
                 Welcome to Vudung App
             </h1>
@@ -29,11 +29,14 @@ export default function Page() {
             
             <h2 className="text-2xl font-bold mb-4">Ví dụ Authentication & Authorization (HOC)</h2>
             <div className="flex flex-col gap-4 w-full max-w-2xl px-4">
-                <ProtectedUserProfile />
-                <ProtectedAdminDashboard />
+                <AuthProvider>
+                    <AuthRoleSwitcher />
+                    <ProtectedUserProfile />
+                    <ProtectedAdminDashboard />
+                </AuthProvider>
                 
                 <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded text-sm text-gray-600">
-                    <p><strong>Ghi chú:</strong> Bạn có thể mở file <code>withAuth.tsx</code> và thay đổi giá trị trong hàm <code>useAuth</code> (đổi role thành 'user' hoặc set user thành 'null') để xem các trạng thái phân quyền khác nhau hoạt động như thế nào.</p>
+                    <p><strong>Ghi chú:</strong> Nhờ sử dụng <code>AuthContext</code> dùng chung và <code>AuthRoleSwitcher</code> ở trên, bạn có thể chuyển đổi linh hoạt vai trò trực tiếp trên giao diện để quan sát trạng thái Loading, Authenticated và Authorized mà không cần sửa code.</p>
                 </div>
             </div>
 
@@ -44,7 +47,5 @@ export default function Page() {
             
             <div className="mb-10"></div>
         </div>
-    )
-
-
+    );
 }

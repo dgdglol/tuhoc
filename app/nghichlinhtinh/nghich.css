@@ -1,8 +1,8 @@
-body {
-  margin: 0;
-  font-family: sans-serif;
+/* Tách riêng styles cho trang Nghịch linh tinh thay vì ghi đè lên body toàn cục */
+.nghich-container {
   background: #f0f4f8;
-  padding: 40px 20px;
+  min-height: 100%;
+  padding: 20px;
 }
 
 .container {

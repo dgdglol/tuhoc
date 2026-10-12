@@ -1,4 +1,5 @@
 import React from 'react';
+import ThoiGianDemo from './thoigian';
 
 // Define the type for the data we're fetching
 interface User {
@@ -27,6 +28,9 @@ export default async function FetchDemoPage() {
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
+      {/* Component Fetch Thời Gian Mới Thêm */}
+      <ThoiGianDemo />
+
       <h1 className="text-3xl font-bold mb-6 text-slate-800">Demo Lấy Dữ Liệu (Fetch Data)</h1>
       <p className="mb-8 text-slate-600">
         Trang này minh họa cách fetch data trên Server Component trong Next.js App Router.

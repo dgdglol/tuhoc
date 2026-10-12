@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1791511495557,
+    "username": "testuser",
+    "password": "password123",
+    "balance": 100000,
+    "createdAt": "2026-10-09T02:04:55.557Z"
+  },
+  {
+    "id": 1791512855576,
+    "username": "dung123",
+    "password": "dung123",
+    "balance": 100000,
+    "createdAt": "2026-10-09T02:27:35.576Z"
+  }
+]

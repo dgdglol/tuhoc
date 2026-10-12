@@ -9,10 +9,10 @@ export async function addFeedback(
     prevState: FormState,
     formData: FormData
 ): Promise<FormState> {
-    const name =FormData.get('name') as string
-    const content= FormData.get('ccontent') as string
+    const name = formData.get('name') as string
+    const content = formData.get('ccontent') as string
 
-    await new Promise((resolve))=> setTimeout((resolve,1000))
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     if(!name ||  name.trim().length < 2){
         return{

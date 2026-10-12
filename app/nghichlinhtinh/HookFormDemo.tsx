@@ -30,6 +30,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function HookFormDemo() {
   const [submittedData, setSubmittedData] = useState<FormData | null>(null);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
   // 2. Khởi tạo useForm
   const {
@@ -58,12 +59,13 @@ export default function HookFormDemo() {
     // Giả lập gọi API mất 1 giây
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setSubmittedData(data);
-    alert('Đăng ký thành công!');
+    setShowSuccessAlert(true);
   };
 
   const handleReset = () => {
     reset();
     setSubmittedData(null);
+    setShowSuccessAlert(false);
   };
 
   return (
@@ -74,6 +76,22 @@ export default function HookFormDemo() {
           Quản lý form hiệu quả, không re-render toàn bộ component và validate chuẩn chỉ.
         </p>
       </div>
+
+      {showSuccessAlert && (
+        <div className="mb-5 p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-xl flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span>🎉</span>
+            <span className="font-medium">Đăng ký thành công! Dữ liệu đã vượt qua xác thực Zod schema.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowSuccessAlert(false)}
+            className="text-emerald-600 hover:text-emerald-900 text-xs px-2 py-0.5 rounded cursor-pointer"
+          >
+            ✕ Đóng
+          </button>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Họ và tên */}
