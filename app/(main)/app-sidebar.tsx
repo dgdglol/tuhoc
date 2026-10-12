@@ -46,8 +46,8 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Game Tài Xỉu",
-    href: "/apptaixiu",
+    title: "Game",
+    href: "/game",
     icon: Dices,
   },
   {

@@ -45,7 +45,7 @@ const PROJECTS: ProjectItem[] = [
   },
   {
     id: 'dice-game',
-    title: 'Tài Xỉu Mini-game & Probability Logic',
+    title: ' Mini-game & Probability Logic',
     category: 'Fullstack Game & Testing',
     description:
       'Mini-game xúc xắc trực tuyến với hệ thống xác thực tài khoản, lịch sử cược và thuật toán tính thưởng xác suất.',
@@ -55,7 +55,7 @@ const PROJECTS: ProjectItem[] = [
       'Next.js Route Handlers backend API.',
     ],
     techStack: ['Next.js API Routes', 'Vitest', 'Game Logic', 'TypeScript'],
-    href: '/apptaixiu',
+    href: '/game',
     status: 'Hoàn thành',
   },
   {
