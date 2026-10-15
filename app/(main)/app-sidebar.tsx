@@ -36,7 +36,7 @@ const navItems = [
     icon: FolderGit2,
   },
   {
-    title: "Nghịch linh tinh (Lab)",
+    title: "Nghịch linh tinh",
     href: "/nghichlinhtinh",
     icon: FlaskConical,
   },
@@ -79,7 +79,7 @@ export function AppSidebar() {
               Bùi Vũ Dũng
             </span>
             <span className="text-xs text-slate-500 truncate">
-              Portfolio & Labs
+              Portfolio 
             </span>
           </div>
         </div>

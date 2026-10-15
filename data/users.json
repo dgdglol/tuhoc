@@ -11,6 +11,7 @@
     "username": "dung123",
     "password": "dung123",
     "balance": 100000,
-    "createdAt": "2026-10-09T02:27:35.576Z"
+    "createdAt": "2026-10-09T02:27:35.576Z",
+    "role": "admin"
   }
 ]

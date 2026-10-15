@@ -1,10 +1,14 @@
 import "./(main)/globals.css";
-
-export default function RootLayout({children}: {children: React.ReactNode}) {
-    return(
+import GlobalBlurGuard from "@/components/ui/GlobalBlurGuard";
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+    return (
         <html lang="vi">
             <head />
-            <body>{children}</body>
+            <body>
+                <GlobalBlurGuard>
+                    {children}
+                </GlobalBlurGuard>
+            </body>
         </html>
     )
 }
