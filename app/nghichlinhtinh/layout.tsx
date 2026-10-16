@@ -7,7 +7,7 @@ import { AppSidebar } from "@/app/(main)/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = {
-  title: "Nghịch linh tinh (Lab) | Bùi Vũ Dũng",
+  title: "Nghịch linh tinh  | Bùi Vũ Dũng",
   description: "Phòng nghiên cứu React Patterns, Form Validation, Auth HOC & State Management",
 };
 
@@ -21,7 +21,7 @@ export default function NghichLinhTinhLayout({ children }: { children: ReactNode
             <SidebarTrigger className="text-slate-600 hover:text-slate-900" />
             <Separator orientation="vertical" className="h-5" />
             <span className="text-sm font-semibold text-slate-800">
-              Nghịch linh tinh (React Patterns & Forms Lab)
+              Nghịch linh tinh
             </span>
           </div>
 
