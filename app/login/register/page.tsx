@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { saveAuthUser } from "@/app/login/page";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -12,12 +13,12 @@ export default function RegisterPage() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
-    const handleRegister = (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
         setSuccess("");
 
-        // 1. Kiểm tra dữ liệu nhập vào (Validate)
+        
         if (!username.trim() || !password.trim()) {
             setError("Vui lòng điền đầy đủ tên đăng nhập và mật khẩu!");
             return;
@@ -33,13 +34,34 @@ export default function RegisterPage() {
             return;
         }
 
+        try {
+            const res = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: username.trim(), password }),
+            });
+            const data = await res.json();
 
-        setSuccess("Đăng ký thành công! ");
+            if (!res.ok || !data.success) {
+                setError(data.message || "Đăng ký thất bại!");
+                return;
+            }
 
-        // Chuyển hướng về trang game Tài Xỉu sau 1.5 giây
-        setTimeout(() => {
-            router.push("/nghichlinhtinh");
-        }, 1500);
+            // Lưu luôn tài khoản vừa đăng ký vào cùng chỗ lưu với /login và GlobalBlurGuard
+            saveAuthUser({
+                username: data.user.username,
+                role: data.user.role || "user",
+                balance: data.user.balance ?? 100000,
+            });
+
+            setSuccess("Đăng ký thành công! Đang chuyển hướng...");
+
+            setTimeout(() => {
+                router.push("/nghichlinhtinh");
+            }, 1200);
+        } catch {
+            setError("Không thể kết nối máy chủ để đăng ký!");
+        }
     };
 
     return (

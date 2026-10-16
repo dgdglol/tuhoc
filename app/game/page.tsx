@@ -3,50 +3,68 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Thuattoan from "./thuattoan";
+import {
+    AUTH_STORAGE_KEY,
+    AUTH_CHANGE_EVENT,
+    saveAuthUser,
+    AuthUser,
+} from "@/app/login/page";
 
 export interface UserAccount {
     username: string;
     balance: number;
+    role?: "guest" | "user" | "admin";
 }
 
 export default function Taixiu() {
     const [choice, setChoice] = useState<"Tài" | "Xỉu" | "">("");
     const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
 
-    // Đọc thông tin user hiện tại từ localStorage
+    // Đọc thông tin user hiện tại từ cùng 1 chỗ lưu với /login và GlobalBlurGuard
     useEffect(() => {
-        const savedUser = localStorage.getItem("taixiu_currentUser");
-        if (savedUser) {
-            try {
-                setCurrentUser(JSON.parse(savedUser));
-            } catch (e) {
-                console.error("Lỗi đọc user:", e);
+        const syncUser = () => {
+            const savedUser = localStorage.getItem(AUTH_STORAGE_KEY);
+            if (savedUser) {
+                try {
+                    const parsed: AuthUser = JSON.parse(savedUser);
+                    setCurrentUser({
+                        username: parsed.username,
+                        balance: parsed.balance ?? 0,
+                        role: parsed.role,
+                    });
+                } catch (e) {
+                    console.error("Lỗi đọc user:", e);
+                }
+            } else {
+                setCurrentUser(null);
             }
-        }
+        };
+
+        syncUser();
+        window.addEventListener(AUTH_CHANGE_EVENT, syncUser);
+        window.addEventListener("storage", syncUser);
+        return () => {
+            window.removeEventListener(AUTH_CHANGE_EVENT, syncUser);
+            window.removeEventListener("storage", syncUser);
+        };
     }, []);
 
-    // Hàm cập nhật số dư của user cả ở state và localStorage
+    // Hàm cập nhật số dư của user cả ở state và localStorage dùng chung
     const handleUpdateBalance = (newBalance: number) => {
         if (!currentUser) return;
 
-        const updatedUser = { ...currentUser, balance: newBalance };
+        const updatedUser: UserAccount = { ...currentUser, balance: newBalance };
         setCurrentUser(updatedUser);
-        localStorage.setItem("taixiu_currentUser", JSON.stringify(updatedUser));
-
-        // Cập nhật lại trong mảng danh sách users
-        const users = JSON.parse(localStorage.getItem("taixiu_users") || "[]");
-        const userIndex = users.findIndex(
-            (u: { username: string }) => u.username.toLowerCase() === currentUser.username.toLowerCase()
-        );
-        if (userIndex !== -1) {
-            users[userIndex].balance = newBalance;
-            localStorage.setItem("taixiu_users", JSON.stringify(users));
-        }
+        saveAuthUser({
+            username: updatedUser.username,
+            role: updatedUser.role || "user",
+            balance: newBalance,
+        });
     };
 
     // Đăng xuất
     const handleLogout = () => {
-        localStorage.removeItem("taixiu_currentUser");
+        saveAuthUser(null);
         setCurrentUser(null);
     };
 
@@ -97,13 +115,13 @@ export default function Taixiu() {
                         </p>
                         <div className="flex justify-center gap-3">
                             <Link
-                                href="/apptaixiu/login"
+                                href="/login"
                                 className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow transition"
                             >
                                 Đăng Nhập
                             </Link>
                             <Link
-                                href="/apptaixiu/register"
+                                href="/login/register"
                                 className="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg shadow transition"
                             >
                                 Đăng Ký (+100k xu)
