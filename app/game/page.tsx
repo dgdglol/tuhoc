@@ -16,8 +16,8 @@ export interface UserAccount {
     role?: "guest" | "user" | "admin";
 }
 
-export default function Taixiu() {
-    const [choice, setChoice] = useState<"Tài" | "Xỉu" | "">("");
+export default function DiceGame() {
+    const [choice, setChoice] = useState<"Cao" | "Thấp" | "">("");
     const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
 
     // Đọc thông tin user hiện tại từ cùng 1 chỗ lưu với /login và GlobalBlurGuard
@@ -68,11 +68,11 @@ export default function Taixiu() {
         setCurrentUser(null);
     };
 
-    // Nạp thêm xu cứu trợ khi hết tiền
+    // Nhận thêm điểm hỗ trợ khi hết điểm
     const handleRefill = () => {
         if (!currentUser) return;
         handleUpdateBalance(currentUser.balance + 50000);
-        alert("Đã nhận 50.000 xu cứu trợ! Chúc bạn may mắn lần này.");
+        alert("Đã nhận thêm 50.000 điểm hỗ trợ! Chúc bạn chơi vui vẻ.");
     };
 
     return (
@@ -86,9 +86,9 @@ export default function Taixiu() {
                             <p className="font-bold text-gray-800 text-lg">👤 {currentUser.username}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-gray-500">Số dư hiện có</p>
+                            <p className="text-sm text-gray-500">Điểm hiện có</p>
                             <p className="font-bold text-green-600 text-xl">
-                                💰 {currentUser.balance.toLocaleString()} xu
+                                ⭐ {currentUser.balance.toLocaleString()} điểm
                             </p>
                         </div>
                         <div className="flex gap-2 w-full sm:w-auto">
@@ -97,7 +97,7 @@ export default function Taixiu() {
                                     onClick={handleRefill}
                                     className="px-3 py-1.5 text-xs bg-amber-500 hover:bg-amber-600 text-white font-medium rounded shadow transition"
                                 >
-                                    + Cứu trợ 50k
+                                    + Nhận 50k điểm
                                 </button>
                             )}
                             <button
@@ -111,7 +111,7 @@ export default function Taixiu() {
                 ) : (
                     <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl text-center">
                         <p className="text-amber-800 font-medium text-sm mb-2">
-                            ⚠️ Bạn đang chơi ở chế độ khách (Chưa lưu xu & kết quả).
+                            ⚠️ Bạn đang ở chế độ khách (Chưa lưu điểm &amp; kết quả).
                         </p>
                         <div className="flex justify-center gap-3">
                             <Link
@@ -124,50 +124,51 @@ export default function Taixiu() {
                                 href="/login/register"
                                 className="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg shadow transition"
                             >
-                                Đăng Ký (+100k xu)
+                                Đăng Ký (+100k điểm)
                             </Link>
                         </div>
                     </div>
                 )}
             </div>
 
-            <h1 className="text-4xl font-extrabold mb-4 text-gray-900">Game</h1>
+            <h1 className="text-4xl font-extrabold mb-4 text-gray-900">Trò Chơi Xúc Xắc</h1>
 
             <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
                 <h3 className="text-lg">
-                    Bạn chọn: <strong className={choice === "Tài" ? "text-green-600" : choice === "Xỉu" ? "text-red-600" : "text-gray-500"}>
+                    Dự đoán của bạn:{" "}
+                    <strong className={choice === "Cao" ? "text-green-600" : choice === "Thấp" ? "text-blue-600" : "text-gray-500"}>
                         {choice || "Chưa chọn"}
                     </strong>
                 </h3>
             </div>
 
-            {/* Nút chọn Tài / Xỉu */}
+            {/* Nút chọn Cao / Thấp */}
             <div style={{ display: "flex", gap: "20px" }}>
                 <button
                     type="button"
-                    onClick={() => setChoice("Tài")}
+                    onClick={() => setChoice("Cao")}
                     className={`px-8 py-3 text-lg font-bold rounded-xl text-white transition transform active:scale-95 shadow ${
-                        choice === "Tài"
+                        choice === "Cao"
                             ? "bg-green-600 ring-4 ring-green-300"
                             : "bg-green-500 hover:bg-green-600 opacity-90"
                     }`}
                 >
-                    Tài (11 - 17)
+                    Cao (11 - 17)
                 </button>
                 <button
                     type="button"
-                    onClick={() => setChoice("Xỉu")}
+                    onClick={() => setChoice("Thấp")}
                     className={`px-8 py-3 text-lg font-bold rounded-xl text-white transition transform active:scale-95 shadow ${
-                        choice === "Xỉu"
-                            ? "bg-red-600 ring-4 ring-red-300"
-                            : "bg-red-500 hover:bg-red-600 opacity-90"
+                        choice === "Thấp"
+                            ? "bg-blue-600 ring-4 ring-blue-300"
+                            : "bg-blue-500 hover:bg-blue-600 opacity-90"
                     }`}
                 >
-                    Xỉu (4 - 10)
+                    Thấp (4 - 10)
                 </button>
             </div>
 
-            {/* Component thuật toán lắc xúc xắc */}
+            {/* Component thuật toán tung xúc xắc */}
             <Thuattoan
                 choice={choice}
                 currentUser={currentUser}

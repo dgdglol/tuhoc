@@ -23,7 +23,7 @@ export default function Thuattoan({ choice, currentUser, onUpdateBalance }: Thua
     // lưu kết quả xúc xắc
     const [dice, setDice] = useState<DiceValue[]>([1, 1, 1]);
     const [total, setTotal] = useState<number>(3);
-    const [result, setResult] = useState<Result>('Chưa xắc');
+    const [result, setResult] = useState<Result>('Chưa tung');
     const [betAmount, setBetAmount] = useState<number>(10000);
     const [lastDelta, setLastDelta] = useState<number | null>(null);
 
@@ -43,11 +43,11 @@ export default function Thuattoan({ choice, currentUser, onUpdateBalance }: Thua
 
     const handleRoll = () => {
         if (!choice) {
-            alert("Vui lòng chọn Tài hoặc Xỉu trước khi lắc!");
+            alert("Vui lòng chọn mức dự đoán Cao hoặc Thấp trước khi tung!");
             return;
         }
 
-        // Nếu đã đăng nhập, kiểm tra tiền cược bằng hàm đã được test TDD
+        // Nếu đã đăng nhập, kiểm tra điểm tham gia bằng hàm đã được test TDD
         if (currentUser) {
             const check = kiemTraCuocHopLe(currentUser.balance, betAmount);
             if (!check.valid) {
@@ -62,10 +62,10 @@ export default function Thuattoan({ choice, currentUser, onUpdateBalance }: Thua
 
         let d1: DiceValue, d2: DiceValue, d3: DiceValue;
 
-        // Cứ mỗi 6 lượt (lượt 6, 12, 18,...) thì bịp cho người chơi thua
-        const isBip = newCount % 6 === 0;
+        // Cứ mỗi 6 lượt (lượt 6, 12, 18,...) thì kích hoạt lượt thử thách khó
+        const isHardTurn = newCount % 6 === 0;
 
-        if (isBip) {
+        if (isHardTurn) {
             [d1, d2, d3] = sinhXucXacThua(choice);
         } else {
             d1 = getRandom();
@@ -81,20 +81,20 @@ export default function Thuattoan({ choice, currentUser, onUpdateBalance }: Thua
         setTotal(sum);
         setResult(roundResult);
 
-        // Cộng / Trừ tiền cược bằng hàm đã test TDD
+        // Cộng / Trừ điểm tích lũy bằng hàm đã test TDD
         if (currentUser && onUpdateBalance) {
             const newBal = tinhSoDuMoi(currentUser.balance, betAmount, roundResult);
             onUpdateBalance(newBal);
-            setLastDelta(roundResult === 'Người chơi thắng' ? betAmount : -betAmount);
+            setLastDelta(roundResult === 'Dự đoán đúng' ? betAmount : -betAmount);
         }
     };
 
     return (
         <div className="flex flex-col items-center gap-4 mt-6 w-full max-w-md px-4">
-            {/* Khu vực đặt cược (nếu đã đăng nhập) */}
+            {/* Khu vực chọn mức điểm (nếu đã đăng nhập) */}
             {currentUser && (
                 <div className="w-full bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center">
-                    <p className="text-sm font-semibold text-gray-700 mb-2">Chọn mức cược (xu):</p>
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Chọn mức điểm tham gia:</p>
                     <div className="flex flex-wrap justify-center gap-2 mb-3">
                         {[10000, 20000, 50000, 100000].map((amt) => (
                             <button
@@ -115,12 +115,12 @@ export default function Thuattoan({ choice, currentUser, onUpdateBalance }: Thua
                             onClick={() => setBetAmount(currentUser.balance)}
                             className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-orange-100 hover:bg-orange-200 text-orange-700 transition"
                         >
-                            Tất tay
+                            Tối đa
                         </button>
                     </div>
 
                     <div className="flex items-center justify-center gap-2">
-                        <span className="text-sm text-gray-500">Cược:</span>
+                        <span className="text-sm text-gray-500">Mức điểm:</span>
                         <input
                             type="number"
                             min="1000"
@@ -129,21 +129,21 @@ export default function Thuattoan({ choice, currentUser, onUpdateBalance }: Thua
                             onChange={(e) => setBetAmount(Number(e.target.value))}
                             className="w-36 px-2 py-1 text-center font-bold text-gray-800 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                         />
-                        <span className="text-xs text-gray-500">xu</span>
+                        <span className="text-xs text-gray-500">điểm</span>
                     </div>
                 </div>
             )}
 
-            {/* Nút lắc xúc xắc */}
+            {/* Nút tung xúc xắc */}
             <button
                 type="button"
                 onClick={handleRoll}
                 className="w-full max-w-xs py-3 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-lg rounded-xl shadow-md transition duration-150"
             >
-                🎲 Lắc xúc xắc
+                🎲 Tung xúc xắc
             </button>
 
-            {/* Kết quả ván chơi */}
+            {/* Kết quả lượt chơi */}
             <div className="w-full bg-white p-5 rounded-xl border border-gray-200 shadow-sm text-center">
                 <p className="text-xs text-gray-400 mb-1">Số lượt chơi: {playerCount}</p>
                 <div className="flex justify-center items-center gap-3 my-2">
@@ -161,18 +161,18 @@ export default function Thuattoan({ choice, currentUser, onUpdateBalance }: Thua
                 </h3>
 
                 <h3 className={`text-2xl font-extrabold mt-3 ${
-                    result === 'Người chơi thắng'
+                    result === 'Dự đoán đúng'
                         ? 'text-green-600'
-                        : result === 'Nhà cái thắng'
+                        : result === 'Dự đoán sai'
                         ? 'text-red-600'
                         : 'text-gray-500'
                 }`}>
                     {result}
                 </h3>
 
-                {currentUser && lastDelta !== null && result !== 'Chưa xắc' && (
+                {currentUser && lastDelta !== null && result !== 'Chưa tung' && (
                     <p className={`mt-1 font-semibold text-sm ${lastDelta > 0 ? "text-green-600" : "text-red-600"}`}>
-                        {lastDelta > 0 ? `+${lastDelta.toLocaleString()} xu 🤑` : `${lastDelta.toLocaleString()} xu 💸`}
+                        {lastDelta > 0 ? `+${lastDelta.toLocaleString()} điểm 🎉` : `${lastDelta.toLocaleString()} điểm`}
                     </p>
                 )}
             </div>

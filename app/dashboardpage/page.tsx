@@ -1,54 +1,82 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { ArrowUpRight, DollarSign, Users, ShoppingCart, TrendingUp } from "lucide-react";
 
+interface UserRecord {
+  id: number;
+  username: string;
+  password?: string;
+  role?: string;
+  balance?: number;
+  createdAt?: string;
+}
+
 export default function Dashboardpage() {
+  const [users, setUsers] = useState<UserRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/users")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.users)) {
+          setUsers(data.users);
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const totalBalance = users.reduce((sum, u) => sum + (u.balance ?? 0), 0);
+
   const stats = [
     {
-      title: "Tổng doanh thu",
-      value: "128.450.000 ₫",
-      change: "+14.2%",
+      title: "Tổng tài khoản hệ thống",
+      value: `${users.length} người dùng`,
+      change: "data/users.json",
       isPositive: true,
-      desc: "so với tháng trước",
-      icon: DollarSign,
-      color: "text-emerald-600 bg-emerald-50",
-    },
-    {
-      title: "Đơn hàng mới",
-      value: "+1,429",
-      change: "+8.1%",
-      isPositive: true,
-      desc: "so với tuần trước",
-      icon: ShoppingCart,
-      color: "text-indigo-600 bg-indigo-50",
-    },
-    {
-      title: "Khách hàng mới",
-      value: "+482",
-      change: "+18.7%",
-      isPositive: true,
-      desc: "trong 30 ngày qua",
+      desc: "đang lưu trên hệ thống",
       icon: Users,
       color: "text-blue-600 bg-blue-50",
     },
     {
-      title: "Tỷ lệ tăng trưởng",
-      value: "24.6%",
-      change: "+4.3%",
+      title: "Tổng điểm tích lũy toàn hệ thống",
+      value: `${totalBalance.toLocaleString()} điểm`,
+      change: "Điểm tích lũy",
       isPositive: true,
-      desc: "mục tiêu quý này",
+      desc: "cộng dồn tất cả user",
+      icon: DollarSign,
+      color: "text-emerald-600 bg-emerald-50",
+    },
+    {
+      title: "Tài khoản Admin",
+      value: `${users.filter((u) => u.role === "admin").length}`,
+      change: "Toàn quyền",
+      isPositive: true,
+      desc: "quản trị viên",
       icon: TrendingUp,
-      color: "text-amber-600 bg-amber-50",
+      color: "text-rose-600 bg-rose-50",
+    },
+    {
+      title: "Tài khoản User thường",
+      value: `${users.filter((u) => (u.role || "user") === "user").length}`,
+      change: "Thành viên",
+      isPositive: true,
+      desc: "người dùng đã đăng ký",
+      icon: ShoppingCart,
+      color: "text-indigo-600 bg-indigo-50",
     },
   ];
 
   return (
     <div className="space-y-6">
-      {/* Tiêu đề & Giới thiệu */}
       <div>
         <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-          Tổng quan kinh doanh 🚀
+          Bảng quản trị &amp; Dữ liệu người dùng (Admin Only) 👑
         </h2>
         <p className="text-sm text-slate-500 mt-1">
-          Xin chào Bùi Vũ Dũng! Đây là tình hình hoạt động của hệ thống hôm nay.
+          Chỉ tài khoản có vai trò <strong>admin</strong> mới truy cập được trang này và xem dữ liệu từ <code>data/users.json</code>.
         </p>
       </div>
 
@@ -82,17 +110,58 @@ export default function Dashboardpage() {
         })}
       </div>
 
-      {/* Placeholder bảng hoạt động gần đây */}
+      {/* Bảng dữ liệu người dùng thật trong data/users.json */}
       <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
-        <h3 className="text-base font-semibold text-slate-900">Đơn hàng gần đây</h3>
-        <p className="text-xs text-slate-400 mt-0.5">Dữ liệu cập nhật theo thời gian thực</p>
-        
-        <div className="mt-6 flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 py-12 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400 mb-3">
-            <ShoppingCart className="h-6 w-6" />
-          </div>
-          <p className="text-sm font-medium text-slate-700">Chưa có giao dịch phát sinh trong 1 giờ qua</p>
-          <p className="text-xs text-slate-400 mt-1">Các đơn hàng mới sẽ tự động hiển thị tại đây.</p>
+        <h3 className="text-base font-semibold text-slate-900">
+          Danh sách tài khoản người dùng (<code>data/users.json</code>)
+        </h3>
+        <p className="text-xs text-slate-400 mt-0.5">
+          Dữ liệu nhạy cảm chỉ hiển thị cho Quản trị viên (Admin)
+        </p>
+
+        <div className="mt-4 overflow-x-auto">
+          {loading ? (
+            <p className="text-sm text-slate-500 py-8 text-center">⏳ Đang tải dữ liệu người dùng...</p>
+          ) : (
+            <table className="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px]">
+                  <th className="py-3 px-4 font-semibold">ID</th>
+                  <th className="py-3 px-4 font-semibold">Username</th>
+                  <th className="py-3 px-4 font-semibold">Password</th>
+                  <th className="py-3 px-4 font-semibold">Role</th>
+                  <th className="py-3 px-4 font-semibold">Điểm (Balance)</th>
+                  <th className="py-3 px-4 font-semibold">Ngày tạo</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {users.map((u) => (
+                  <tr key={u.id || u.username} className="hover:bg-slate-50/80">
+                    <td className="py-3 px-4 font-mono text-slate-400">{u.id}</td>
+                    <td className="py-3 px-4 font-bold text-slate-800">👤 {u.username}</td>
+                    <td className="py-3 px-4 font-mono text-slate-600">{u.password}</td>
+                    <td className="py-3 px-4">
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase ${
+                          u.role === "admin"
+                            ? "bg-rose-100 text-rose-700"
+                            : "bg-blue-100 text-blue-700"
+                        }`}
+                      >
+                        {u.role || "user"}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 font-semibold text-emerald-600">
+                      {(u.balance ?? 0).toLocaleString()} điểm
+                    </td>
+                    <td className="py-3 px-4 text-slate-500">
+                      {u.createdAt ? new Date(u.createdAt).toLocaleString("vi-VN") : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>

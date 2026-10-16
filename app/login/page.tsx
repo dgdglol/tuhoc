@@ -99,15 +99,8 @@ export default function LoginPage({ isModal = false, onLoginSuccess }: LoginPage
         if (onLoginSuccess) {
             onLoginSuccess(guestUser);
         } else {
-            router.push("/nghichlinhtinh");
+            router.push("/");
         }
-    };
-
-    // Điền nhanh tài khoản mẫu trong data/users.json
-    const quickFill = (u: string, p: string) => {
-        setUsername(u);
-        setPassword(p);
-        setError("");
     };
 
     const formCard = (
@@ -120,7 +113,7 @@ export default function LoginPage({ isModal = false, onLoginSuccess }: LoginPage
                     Đăng Nhập Hệ Thống
                 </h2>
                 <p className="text-xs text-gray-500">
-                    Xác thực qua <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[11px]">/api/auth/login</code> &amp; lưu chung tại <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[11px]">data/users.json</code>
+                    Đăng nhập để mở khoá các tính năng theo phân quyền tài khoản
                 </p>
             </div>
 
@@ -176,7 +169,7 @@ export default function LoginPage({ isModal = false, onLoginSuccess }: LoginPage
                 </button>
             </form>
 
-            {/* Vào nhanh bằng Khách (Guest) */}
+            {/* Vào bằng Khách (Guest) - Chỉ xem được CV */}
             <div className="relative flex items-center justify-center">
                 <div className="border-t border-gray-200 dark:border-gray-700 w-full"></div>
                 <span className="bg-white dark:bg-zinc-900 px-3 text-[11px] text-gray-400 uppercase font-semibold">
@@ -189,31 +182,8 @@ export default function LoginPage({ isModal = false, onLoginSuccess }: LoginPage
                 onClick={handleGuestLogin}
                 className="w-full py-2 px-4 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 font-medium text-xs rounded-xl transition cursor-pointer"
             >
-                🚀 Vào nhanh với vai trò Khách (Guest)
+                👀 Vào với vai trò Khách (Guest - Chỉ xem được CV)
             </button>
-
-            {/* Tài khoản mẫu trong data/users.json */}
-            <div className="pt-2 border-t border-gray-100 dark:border-gray-800 text-[11px] text-gray-500 space-y-1.5">
-                <p className="font-semibold text-gray-700 dark:text-gray-300">
-                    ⚡ Điền nhanh tài khoản trong data/users.json:
-                </p>
-                <div className="flex flex-wrap gap-2">
-                    <button
-                        type="button"
-                        onClick={() => quickFill("dung123", "dung123")}
-                        className="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg cursor-pointer transition"
-                    >
-                        👑 Admin: <span className="font-mono font-bold">dung123</span>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => quickFill("testuser", "password123")}
-                        className="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg cursor-pointer transition"
-                    >
-                        👤 User: <span className="font-mono font-bold">testuser</span>
-                    </button>
-                </div>
-            </div>
 
             <p className="text-center text-xs text-gray-600 pt-1">
                 Chưa có tài khoản?{" "}

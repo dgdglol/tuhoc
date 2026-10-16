@@ -8,23 +8,6 @@ export async function POST(request: Request) {
     try {
         const { username, password } = await request.json();
 
-        const cleanUsername = (username || "").trim();
-        const cleanPassword = password || "";
-
-        if (!cleanUsername || !cleanPassword) {
-            return NextResponse.json(
-                { success: false, message: "Vui lòng điền đầy đủ tên đăng nhập và mật khẩu!" },
-                { status: 400 }
-            );
-        }
-
-        if (cleanPassword.length < 6) {
-            return NextResponse.json(
-                { success: false, message: "Mật khẩu phải có ít nhất 6 ký tự!" },
-                { status: 400 }
-            );
-        }
-
         const dirPath = path.dirname(filePath);
         if (!fs.existsSync(dirPath)) {
             fs.mkdirSync(dirPath, { recursive: true });
@@ -36,21 +19,17 @@ export async function POST(request: Request) {
             users = JSON.parse(fileData || "[]");
         }
 
-        const isDuplicate = users.some(
-            (u: any) => (u.username || "").toLowerCase() === cleanUsername.toLowerCase()
-        );
-
-        if (isDuplicate) {
+        if (users.some((u: any) => u.username.toLowerCase() === username.trim().toLowerCase())) {
             return NextResponse.json(
-                { success: false, message: "Tên tài khoản này đã có người sử dụng!" },
+                { success: false, message: "Tài khoản đã có người dùng!" },
                 { status: 400 }
             );
         }
 
         const newUser = {
             id: Date.now(),
-            username: cleanUsername,
-            password: cleanPassword,
+            username: username.trim(),
+            password,
             role: "user",
             balance: 100000,
             createdAt: new Date().toISOString(),
@@ -61,17 +40,16 @@ export async function POST(request: Request) {
 
         return NextResponse.json({
             success: true,
-            message: "Đăng ký tài khoản thành công!",
+            message: "Tạo tài khoản và lưu thành công!",
             user: {
                 username: newUser.username,
                 role: newUser.role,
                 balance: newUser.balance,
             },
         });
-    } catch (error) {
-        console.error("Lỗi API register:", error);
+    } catch {
         return NextResponse.json(
-            { success: false, message: "Lỗi máy chủ khi đăng ký tài khoản!" },
+            { success: false, message: "Lỗi lưu dữ liệu" },
             { status: 500 }
         );
     }

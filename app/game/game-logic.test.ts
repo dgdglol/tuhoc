@@ -7,7 +7,7 @@ import {
     sinhXucXacThua,
 } from "./game-logic";
 
-describe("Bộ kiểm thử TDD cho Game", () => {
+describe("Bộ kiểm thử TDD cho Mini-game Dự Đoán Xúc Xắc", () => {
     // ----------------------------------------------------
     describe("1. Thuật toán tính tổng điểm", () => {
         it("Tính đúng tổng 3 viên xúc xắc [1, 2, 3] = 6", () => {
@@ -24,95 +24,93 @@ describe("Bộ kiểm thử TDD cho Game", () => {
     });
 
     // ----------------------------------------------------
-    describe("2. Thuật toán phân định Thắng / Thua", () => {
-        it("Chọn Tài và ra tổng 14 (3-5-6) -> Người chơi thắng", () => {
-            const ketQua = tinhKetQua([3, 5, 6], "Tài");
-            expect(ketQua).toBe("Người chơi thắng");
+    describe("2. Thuật toán phân định kết quả dự đoán", () => {
+        it("Chọn Cao và ra tổng 14 (3-5-6) -> Dự đoán đúng", () => {
+            const ketQua = tinhKetQua([3, 5, 6], "Cao");
+            expect(ketQua).toBe("Dự đoán đúng");
         });
 
-        it("Chọn Xỉu và ra tổng 7 (1-2-4) -> Người chơi thắng", () => {
-            const ketQua = tinhKetQua([1, 2, 4], "Xỉu");
-            expect(ketQua).toBe("Người chơi thắng");
+        it("Chọn Thấp và ra tổng 7 (1-2-4) -> Dự đoán đúng", () => {
+            const ketQua = tinhKetQua([1, 2, 4], "Thấp");
+            expect(ketQua).toBe("Dự đoán đúng");
         });
 
-        it("Chọn Tài nhưng ra tổng 8 (2-3-3) -> Nhà cái thắng", () => {
-            const ketQua = tinhKetQua([2, 3, 3], "Tài");
-            expect(ketQua).toBe("Nhà cái thắng");
+        it("Chọn Cao nhưng ra tổng 8 (2-3-3) -> Dự đoán sai", () => {
+            const ketQua = tinhKetQua([2, 3, 3], "Cao");
+            expect(ketQua).toBe("Dự đoán sai");
         });
 
-        it("Chọn Xỉu nhưng ra tổng 12 (4-4-4 loại trừ bão, ví dụ 3-4-5) -> Nhà cái thắng", () => {
-            const ketQua = tinhKetQua([3, 4, 5], "Xỉu");
-            expect(ketQua).toBe("Nhà cái thắng");
+        it("Chọn Thấp nhưng ra tổng 12 (3-4-5) -> Dự đoán sai", () => {
+            const ketQua = tinhKetQua([3, 4, 5], "Thấp");
+            expect(ketQua).toBe("Dự đoán sai");
         });
 
-        it("LUẬT BÃO: Ra 3 con giống nhau [2, 2, 2], dù chọn Xỉu vẫn THUA (Nhà cái thắng)", () => {
-            const ketQua = tinhKetQua([2, 2, 2], "Xỉu");
-            expect(ketQua).toBe("Nhà cái thắng");
+        it("Bộ ba đồng nhất [2, 2, 2]: dù chọn Thấp vẫn tính là Dự đoán sai", () => {
+            const ketQua = tinhKetQua([2, 2, 2], "Thấp");
+            expect(ketQua).toBe("Dự đoán sai");
         });
 
-        it("LUẬT BÃO: Ra 3 con giống nhau [5, 5, 5], dù chọn Tài vẫn THUA (Nhà cái thắng)", () => {
-            const ketQua = tinhKetQua([5, 5, 5], "Tài");
-            expect(ketQua).toBe("Nhà cái thắng");
+        it("Bộ ba đồng nhất [5, 5, 5]: dù chọn Cao vẫn tính là Dự đoán sai", () => {
+            const ketQua = tinhKetQua([5, 5, 5], "Cao");
+            expect(ketQua).toBe("Dự đoán sai");
         });
 
-        it("Chưa chọn cửa thì trả về 'Chưa xắc'", () => {
+        it("Chưa chọn mức dự đoán thì trả về 'Chưa tung'", () => {
             const ketQua = tinhKetQua([1, 2, 3], "");
-            expect(ketQua).toBe("Chưa xắc");
+            expect(ketQua).toBe("Chưa tung");
         });
     });
 
     // ----------------------------------------------------
-    describe("3. Thuật toán kiểm tra tiền cược hợp lệ", () => {
-        it("Cược số tiền hợp lệ (nhỏ hơn hoặc bằng số dư)", () => {
+    describe("3. Thuật toán kiểm tra mức điểm tham gia hợp lệ", () => {
+        it("Điểm tham gia hợp lệ (nhỏ hơn hoặc bằng số dư)", () => {
             const check = kiemTraCuocHopLe(100000, 20000);
             expect(check.valid).toBe(true);
         });
 
-        it("Báo lỗi nếu cược 0 xu hoặc số âm", () => {
+        it("Báo lỗi nếu mức điểm bằng 0 hoặc số âm", () => {
             const check0 = kiemTraCuocHopLe(100000, 0);
             expect(check0.valid).toBe(false);
-            expect(check0.error).toBe("Số tiền cược phải lớn hơn 0!");
+            expect(check0.error).toBe("Số điểm tham gia phải lớn hơn 0!");
 
             const checkAm = kiemTraCuocHopLe(100000, -5000);
             expect(checkAm.valid).toBe(false);
         });
 
-        it("Báo lỗi nếu đặt cược vượt quá số dư hiện có", () => {
+        it("Báo lỗi nếu mức điểm vượt quá số dư hiện có", () => {
             const check = kiemTraCuocHopLe(50000, 100000);
             expect(check.valid).toBe(false);
-            expect(check.error).toBe("Số dư không đủ để đặt cược!");
+            expect(check.error).toBe("Số dư điểm không đủ để tham gia!");
         });
     });
 
     // ----------------------------------------------------
-    describe("4. Thuật toán cộng / trừ tiền cược", () => {
-        it("Khi người chơi thắng: cộng thêm đúng số tiền cược vào ví", () => {
-            const soDuMoi = tinhSoDuMoi(100000, 30000, "Người chơi thắng");
+    describe("4. Thuật toán cộng / trừ điểm tích lũy", () => {
+        it("Khi dự đoán đúng: cộng thêm điểm thưởng", () => {
+            const soDuMoi = tinhSoDuMoi(100000, 30000, "Dự đoán đúng");
             expect(soDuMoi).toBe(130000);
         });
 
-        it("Khi nhà cái thắng: trừ đúng số tiền cược khỏi ví", () => {
-            const soDuMoi = tinhSoDuMoi(100000, 30000, "Nhà cái thắng");
+        it("Khi dự đoán sai: trừ điểm tương ứng", () => {
+            const soDuMoi = tinhSoDuMoi(100000, 30000, "Dự đoán sai");
             expect(soDuMoi).toBe(70000);
         });
     });
 
     // ----------------------------------------------------
-    describe("5. Thuật toán 'Bịp' (Ép người chơi thua)", () => {
-        it("Người chơi chọn Tài: hàm bịp luôn tạo ra tổng điểm thuộc cửa Xỉu (4..10)", () => {
-            // Chạy thử 50 lần ngẫu nhiên để kiểm chứng
+    describe("5. Thuật toán chế độ thử thách (Tạo kết quả ngược dự đoán)", () => {
+        it("Người chơi chọn Cao: hàm luôn tạo ra tổng điểm thuộc nhóm Thấp (4..10)", () => {
             for (let i = 0; i < 50; i++) {
-                const dice = sinhXucXacThua("Tài");
+                const dice = sinhXucXacThua("Cao");
                 const sum = tinhTongDiem(dice);
                 expect(sum).toBeGreaterThanOrEqual(4);
                 expect(sum).toBeLessThanOrEqual(10);
             }
         });
 
-        it("Người chơi chọn Xỉu: hàm bịp luôn tạo ra tổng điểm thuộc cửa Tài (11..17)", () => {
-            // Chạy thử 50 lần ngẫu nhiên để kiểm chứng
+        it("Người chơi chọn Thấp: hàm luôn tạo ra tổng điểm thuộc nhóm Cao (11..17)", () => {
             for (let i = 0; i < 50; i++) {
-                const dice = sinhXucXacThua("Xỉu");
+                const dice = sinhXucXacThua("Thấp");
                 const sum = tinhTongDiem(dice);
                 expect(sum).toBeGreaterThanOrEqual(11);
                 expect(sum).toBeLessThanOrEqual(17);

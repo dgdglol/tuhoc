@@ -45,10 +45,10 @@ const PROJECTS: ProjectItem[] = [
   },
   {
     id: 'dice-game',
-    title: ' Mini-game & Probability Logic',
+    title: 'Dice Prediction Mini-game & Probability Logic',
     category: 'Fullstack Game & Testing',
     description:
-      'Mini-game xúc xắc trực tuyến với hệ thống xác thực tài khoản, lịch sử cược và thuật toán tính thưởng xác suất.',
+      'Mini-game dự đoán xúc xắc trực tuyến với hệ thống xác thực tài khoản, tích lũy điểm thưởng và thuật toán xác suất.',
     highlights: [
       'Bao phủ 100% logic trò chơi với 17 bài kiểm thử Vitest tự động.',
       'Quản lý phiên chơi và xác thực người dùng.',

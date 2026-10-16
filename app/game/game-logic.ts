@@ -1,6 +1,6 @@
 export type DiceValue = 1 | 2 | 3 | 4 | 5 | 6;
-export type Choice = 'Tài' | 'Xỉu' | '';
-export type Result = 'Nhà cái thắng' | 'Người chơi thắng' | 'Chưa xắc';
+export type Choice = 'Cao' | 'Thấp' | '';
+export type Result = 'Dự đoán sai' | 'Dự đoán đúng' | 'Chưa tung';
 
 /**
  * 1. Hàm tính tổng điểm 3 viên xúc xắc
@@ -10,87 +10,87 @@ export function tinhTongDiem(dice: DiceValue[]): number {
 }
 
 /**
- * 2. Phân định Thắng / Thua theo luật:
- * - 3 viên giống nhau (Bão): Nhà cái luôn thắng
- * - Tổng 11 - 17 & chọn Tài: Người chơi thắng
- * - Tổng 4 - 10 & chọn Xỉu: Người chơi thắng
- * - Còn lại: Nhà cái thắng
+ * 2. Phân định kết quả dự đoán theo quy tắc:
+ * - 3 viên giống nhau (Bộ ba đồng nhất): Tính là Dự đoán sai
+ * - Tổng 11 - 17 & chọn Cao: Dự đoán đúng
+ * - Tổng 4 - 10 & chọn Thấp: Dự đoán đúng
+ * - Còn lại: Dự đoán sai
  */
 export function tinhKetQua(dice: DiceValue[], choice: Choice): Result {
-    if (!choice) return 'Chưa xắc';
+    if (!choice) return 'Chưa tung';
 
     const [d1, d2, d3] = dice;
     const sum = tinhTongDiem(dice);
 
-    // Luật 1: 3 con giống nhau (Bão)
+    // Quy tắc 1: 3 viên giống nhau (Bộ ba đồng nhất)
     if (d1 === d2 && d2 === d3) {
-        return 'Nhà cái thắng';
+        return 'Dự đoán sai';
     }
 
-    // Luật 2: Cửa Tài (11 đến 17)
-    if (sum >= 11 && sum <= 17 && choice === 'Tài') {
-        return 'Người chơi thắng';
+    // Quy tắc 2: Nhóm điểm Cao (11 đến 17)
+    if (sum >= 11 && sum <= 17 && choice === 'Cao') {
+        return 'Dự đoán đúng';
     }
 
-    // Luật 3: Cửa Xỉu (4 đến 10)
-    if (sum >= 4 && sum <= 10 && choice === 'Xỉu') {
-        return 'Người chơi thắng';
+    // Quy tắc 3: Nhóm điểm Thấp (4 đến 10)
+    if (sum >= 4 && sum <= 10 && choice === 'Thấp') {
+        return 'Dự đoán đúng';
     }
 
-    return 'Nhà cái thắng';
+    return 'Dự đoán sai';
 }
 
 /**
- * 3. Kiểm tra tính hợp lệ của tiền cược
+ * 3. Kiểm tra tính hợp lệ của mức điểm tham gia
  */
 export function kiemTraCuocHopLe(balance: number, betAmount: number): { valid: boolean; error?: string } {
     if (betAmount <= 0) {
-        return { valid: false, error: 'Số tiền cược phải lớn hơn 0!' };
+        return { valid: false, error: 'Số điểm tham gia phải lớn hơn 0!' };
     }
     if (betAmount > balance) {
-        return { valid: false, error: 'Số dư không đủ để đặt cược!' };
+        return { valid: false, error: 'Số dư điểm không đủ để tham gia!' };
     }
     return { valid: true };
 }
 
 /**
- * 4. Tính toán số dư mới sau mỗi ván cược
+ * 4. Tính toán số dư điểm mới sau mỗi lượt chơi
  */
 export function tinhSoDuMoi(balance: number, betAmount: number, result: Result): number {
-    if (result === 'Người chơi thắng') {
+    if (result === 'Dự đoán đúng') {
         return balance + betAmount;
     }
-    if (result === 'Nhà cái thắng') {
+    if (result === 'Dự đoán sai') {
         return balance - betAmount;
     }
     return balance;
 }
 
 /**
- * 5. Thuật toán tạo xúc xắc làm người chơi THUA (Hàm Bịp)
+ * 5. Thuật toán tạo bộ xúc xắc ngược dự đoán (Chế độ thử thách)
  */
 export function sinhXucXacThua(choice: Choice): DiceValue[] {
     const getRandom = (): DiceValue => (Math.floor(Math.random() * 6) + 1) as DiceValue;
 
-    if (choice === 'Tài') {
-        // Cần thua -> tổng phải từ 4 đến 10
-        const losingTotal = Math.floor(Math.random() * (10 - 4 + 1)) + 4;
+    if (choice === 'Cao') {
+        // Tạo tổng điểm nằm trong khoảng 4 đến 10
+        const targetTotal = Math.floor(Math.random() * (10 - 4 + 1)) + 4;
         let d1: DiceValue, d2: DiceValue, d3: DiceValue;
         do {
             d1 = getRandom();
             d2 = getRandom();
             d3 = getRandom();
-        } while (d1 + d2 + d3 !== losingTotal);
+        } while (d1 + d2 + d3 !== targetTotal);
         return [d1, d2, d3];
-    } else if (choice === 'Xỉu') {
-        // Cần thua -> tổng phải từ 11 đến 17
-        const losingTotal = Math.floor(Math.random() * (17 - 11 + 1)) + 11;
+    } else if (choice === 'Thấp') {
+        // Tạo tổng điểm nằm trong khoảng 11 đến 17
+        const targetTotal = Math.floor(Math.random() * (17 - 11 + 1)) + 11;
         let d1: DiceValue, d2: DiceValue, d3: DiceValue;
         do {
             d1 = getRandom();
             d2 = getRandom();
             d3 = getRandom();
-        } while (d1 + d2 + d3 !== losingTotal);
+        } while (d1 + d2 + d3 !== targetTotal);
         return [d1, d2, d3];
     }
 

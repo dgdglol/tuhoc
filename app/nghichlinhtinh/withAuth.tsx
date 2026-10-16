@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { AUTH_STORAGE_KEY, AUTH_CHANGE_EVENT, AuthUser } from '@/app/login/page';
 
 export interface User {
   name: string;
@@ -20,33 +21,51 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentRole, setCurrentRole] = useState<AuthRole>('admin');
+  const [currentRole, setCurrentRole] = useState<AuthRole>('user');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const applyRole = (role: AuthRole) => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      if (role === 'guest') {
-        setUser(null);
-      } else if (role === 'user') {
-        setUser({ name: 'Khách hàng Demo', role: 'user' });
-      } else {
-        setUser({ name: 'Bùi Vũ Dũng', role: 'admin' });
-      }
-      setLoading(false);
-    }, 400);
-
-    return () => clearTimeout(timer);
-  };
-
   useEffect(() => {
-    const cleanup = applyRole(currentRole);
-    return cleanup;
-  }, [currentRole]);
+    const syncRealAuth = () => {
+      try {
+        const saved = localStorage.getItem(AUTH_STORAGE_KEY);
+        if (saved) {
+          const parsed: AuthUser = JSON.parse(saved);
+          setCurrentRole(parsed.role);
+          if (parsed.role === 'guest') {
+            setUser(null);
+          } else {
+            setUser({ name: parsed.username, role: parsed.role });
+          }
+        } else {
+          setCurrentRole('guest');
+          setUser(null);
+        }
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    syncRealAuth();
+    window.addEventListener(AUTH_CHANGE_EVENT, syncRealAuth);
+    window.addEventListener('storage', syncRealAuth);
+    return () => {
+      window.removeEventListener(AUTH_CHANGE_EVENT, syncRealAuth);
+      window.removeEventListener('storage', syncRealAuth);
+    };
+  }, []);
 
   const switchRole = (newRole: AuthRole) => {
     setCurrentRole(newRole);
+    if (newRole === 'guest') {
+      setUser(null);
+    } else if (newRole === 'user') {
+      setUser({ name: user?.name || 'Thành viên User', role: 'user' });
+    } else {
+      setUser({ name: user?.name || 'Quản trị viên Admin', role: 'admin' });
+    }
   };
 
   return (
